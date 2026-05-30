@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Networking — Chapter Revision</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f5f0;
+    --surface: #ffffff;
+    --surface2: #f8f8f5;
+    --border: #d9d9d4;
+    --accent: #1a56a0;
+    --accent-light: #e8f0fb;
+    --accent2: #2d6a4f;
+    --green: #1a7340;
+    --green-bg: #eaf4ee;
+    --red: #b91c1c;
+    --red-bg: #fdf0f0;
+    --text: #2c2c2c;
+    --muted: #6b7280;
+    --heading: #111111;
+    --border-strong: #b5b5af;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--accent);
+    padding: 36px 24px 28px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid #c2d6f0;
+    padding: 4px 14px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  header h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  header h1 span { color: var(--accent); }
+
+  header p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: center;
+    padding: 16px 36px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 13px 28px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--accent); background: var(--accent-light); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: transparent;
+    font-weight: 600;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--heading);
+    margin-bottom: 4px;
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  /* SCORE BAR */
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .score-fill {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-fill-inner {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  #score-display { color: var(--accent); font-weight: 600; }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .q-card:hover { border-color: var(--accent); box-shadow: 0 1px 6px rgba(26,86,160,0.07); }
+
+  .q-header {
+    padding: 14px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .q-num {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    background: var(--accent-light);
+    border: 1px solid #c2d6f0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 1px;
+  }
+
+  .q-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--heading);
+    line-height: 1.55;
+  }
+
+  .q-toggle {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 16px;
+    transition: all 0.2s;
+    margin-top: 2px;
+    line-height: 1;
+  }
+  .q-card.open .q-toggle {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    transform: rotate(45deg);
+  }
+
+  .q-body {
+    display: none;
+    padding: 0 18px 18px 56px;
+  }
+  .q-card.open .q-body { display: block; }
+
+  /* MCQ OPTIONS */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+
+  .option {
+    padding: 10px 14px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .option.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .option.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+  .option.revealed-correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+
+  .opt-letter {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .option:hover .opt-letter { background: var(--accent); color: #fff; }
+  .option.correct .opt-letter, .option.revealed-correct .opt-letter { background: var(--green); color: #fff; }
+  .option.wrong .opt-letter { background: var(--red); color: #fff; }
+
+  /* ANSWER BOX */
+  .answer-box {
+    background: var(--accent-light);
+    border: 1px solid #c2d6f0;
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 10px 14px;
+    margin-top: 10px;
+  }
+  .answer-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 3px;
+  }
+  .answer-text {
+    font-size: 14px;
+    color: var(--heading);
+    font-weight: 600;
+  }
+
+  /* SHOW ANSWER BUTTON */
+  .show-btn {
+    margin-top: 10px;
+    padding: 6px 16px;
+    border-radius: 4px;
+    border: 1px solid #c2d6f0;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .show-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* DEFINITIONS */
+  .def-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .def-num {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    padding-top: 1px;
+    min-width: 28px;
+  }
+  .def-q {
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.55;
+  }
+  .def-a {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    display: none;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--accent-light);
+    border-radius: 4px;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ESSAY */
+  .essay-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .essay-q {
+    padding: 16px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--heading);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    transition: background 0.12s;
+  }
+  .essay-q:hover { background: var(--surface2); }
+  .essay-toggle { font-size: 20px; color: var(--muted); flex-shrink: 0; line-height: 1; transition: transform 0.2s; margin-top: 2px; }
+  .essay-card.open .essay-toggle { transform: rotate(45deg); color: var(--accent); }
+  .essay-card.open .essay-q { background: var(--accent-light); color: var(--accent); }
+
+  .essay-body {
+    display: none;
+    padding: 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .essay-card.open .essay-body { display: block; }
+  .essay-body p, .essay-body li {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .essay-body ul { padding-left: 20px; margin-top: 8px; }
+  .essay-body li { margin-bottom: 8px; }
+  .essay-body .highlight {
+    color: var(--accent);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .compare-table th {
+    background: #eef2f7;
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--border);
+    border-right: 1px solid var(--border);
+    text-align: left;
+  }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:nth-child(even) td { background: var(--surface2); }
+  .pro { color: var(--green); font-weight: 500; }
+  .con { color: var(--red); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Cloud Networking</div>
+  <h1>Chapter Revision <span>Questions</span></h1>
+  <p>47 Multiple Choice &nbsp;·&nbsp; 16 Fill in Blanks &nbsp;·&nbsp; 13 Definitions &nbsp;·&nbsp; 6 Essay Topics</p>
+</header>
+
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">47</span><span class="stat-label">MCQ Questions</span></div>
+  <div class="stat"><span class="stat-num">16</span><span class="stat-label">Fill in Blanks</span></div>
+  <div class="stat"><span class="stat-num">13</span><span class="stat-label">Definitions</span></div>
+  <div class="stat"><span class="stat-num">6</span><span class="stat-label">Essay Topics</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showSection('mcq', this)">Multiple Choice</button>
+  <button class="tab-btn" onclick="showSection('fill', this)">Fill in Blanks</button>
+  <button class="tab-btn" onclick="showSection('defs', this)">Definitions</button>
+  <button class="tab-btn" onclick="showSection('essay', this)">Essay</button>
+</div>
+
+<main>
+<section class="section active" id="mcq">
+  <div class="section-header">
+    <div class="section-title">Multiple Choice Questions</div>
+    <div class="section-desc">Click a question to expand, then select an option to check your answer.</div>
+  </div>
+  <div class="score-bar">
+    <span>Progress</span>
+    <div class="score-fill"><div class="score-fill-inner" id="score-bar-fill" style="width:0%"></div></div>
+    <span id="score-display">0 / 47</span>
+  </div>
+  <div id="mcq-container"></div>
+</section>
+
+<section class="section" id="fill">
+  <div class="section-header">
+    <div class="section-title">Fill in the Blanks</div>
+    <div class="section-desc">Click "Show Answer" to reveal the correct term.</div>
+  </div>
+  <div id="fill-container"></div>
+</section>
+
+<section class="section" id="defs">
+  <div class="section-header">
+    <div class="section-title">Definitions</div>
+    <div class="section-desc">Read each definition and identify the correct networking term before revealing the answer.</div>
+  </div>
+  <div id="defs-container"></div>
+</section>
+
+<section class="section" id="essay">
+  <div class="section-header">
+    <div class="section-title">Essay Questions</div>
+    <div class="section-desc">Click a question to expand the model answer.</div>
+  </div>
+  <div id="essay-container"></div>
+</section>
+</main>
+
+<script>
+const mcqData = [
+  { q: "What is the term used to describe the traffic pattern commonly observed in data center applications such as web search?", opts: ["North-south traffic pattern","Peer-to-peer traffic pattern","Scatter-gather traffic pattern","Linear traffic pattern"], ans: 2 },
+  { q: "What best describes the traffic characteristics inside cloud data centers?", opts: ["Mostly user-to-server traffic","Machine-to-machine traffic dominates internal traffic","Equal traffic between internet and internal systems","Traffic is primarily broadcast-based"], ans: 1 },
+  { q: "Which of the following is a key implication of data center traffic characteristics?", opts: ["Reduced need for network isolation","High latency tolerance","Congestion and TCP incast","Minimal internal traffic"], ans: 2 },
+  { q: "Which statement best describes data center internal traffic?", opts: ["It is negligible compared to internet traffic","It is smaller than external traffic","It is significantly large and dominant","It occurs only during peak hours"], ans: 2 },
+  { q: "What factor primarily determines the nature of data center traffic?", opts: ["ISP bandwidth","Application, scale, and network design","Operating system type","Storage protocol"], ans: 1 },
+  { q: "Which of the following is a characteristic of flows in data center traffic?", opts: ["Fixed flow size","Predictable arrival rate","Concurrent flows","Static routing"], ans: 2 },
+  { q: "What is a key requirement for networking in cloud data centers due to application demands?", opts: ["High delay tolerance","Tight deadlines for network I/O","Low throughput requirements","Minimal scalability"], ans: 1 },
+  { q: "Which of the following best explains why Top of Rack (ToR) architecture is used?", opts: ["Reduces number of switches","Supports east-west traffic efficiently","Requires long copper cabling","Eliminates aggregation layer"], ans: 1 },
+  { q: "Which of the following is a disadvantage of Top of Rack (ToR)?", opts: ["Lower cabling cost","Cleaner cable management","Increased number of switches to manage","Reduced power consumption"], ans: 2 },
+  { q: "In End of Row (EoR) architecture, racks are typically connected at which layer?", opts: ["Layer 3","Layer 2","Layer 1","Application layer"], ans: 2 },
+  { q: "What is a key advantage of End of Row (EoR) architecture?", opts: ["Supports in-rack copper cabling","Requires more switches","Fewer switches to manage","Higher STP complexity"], ans: 2 },
+  { q: "Which of the following is a limitation of End of Row (EoR)?", opts: ["Reduced cabling costs","Requires bulky copper infrastructure","Modular architecture","Low power consumption"], ans: 1 },
+  { q: "What is the primary function of an aggregation switch in a data center?", opts: ["Connect servers directly","Connect ToR switches to the core network","Replace core switches","Provide storage services"], ans: 1 },
+  { q: "Which of the following best describes a Clos network?", opts: ["Uses large centralized switches","Connects limited inputs to outputs","Connects any number of inputs to outputs using small switches","Eliminates network congestion completely"], ans: 2 },
+  { q: "Why do traditional aggregation switches become a bottleneck in large data centers?", opts: ["Limited CPU capacity","Insufficient storage","Running out of ports","Lack of routing capability"], ans: 2 },
+  { q: "Which of the following is a key issue with traditional data center network designs?", opts: ["Too scalable","Easy to manage","Expensive and difficult to configure","Reduced machine-to-machine traffic"], ans: 2 },
+  { q: "Which type of traffic is referred to as server-to-server communication?", opts: ["North-south","East-west","Broadcast","Multicast"], ans: 1 },
+  { q: "Which type of traffic is referred to as server-to-client communication?", opts: ["North-south","East-west","Broadcast","Multicast"], ans: 0 },
+  { q: "Which of the following is a challenge associated with centralized control in data centers?", opts: ["Easy scalability","Difficulty managing flows","Reduced traffic","Simple routing"], ans: 1 },
+  { q: "Which of the following best explains why data center internal traffic is significantly higher than external traffic?", opts: ["User requests dominate internal operations","Machine-to-machine communication generates large volumes of traffic","External traffic is restricted by ISPs","Applications avoid internal communication"], ans: 1 },
+  { q: "Which of the following is a direct consequence of tight deadlines for network I/O in data centers?", opts: ["Increased tolerance for delays","Requirement for high latency networks","Need for fast and efficient data transfer","Reduced network congestion"], ans: 2 },
+  { q: "Which of the following statements about TCP incast is TRUE?", opts: ["It improves network throughput","It occurs when a single node sends data to multiple servers","It causes congestion due to simultaneous responses","It eliminates packet loss"], ans: 2 },
+  { q: "What is the main reason centralized control at the flow level is difficult in data centers?", opts: ["Limited routing protocols","Large scale and dynamic traffic patterns","Low bandwidth availability","Lack of switching devices"], ans: 1 },
+  { q: "Which of the following is NOT a benefit of Top of Rack (ToR)?", opts: ["Modular architecture","Cleaner cable management","Reduced number of switches","Lower cabling cost"], ans: 2 },
+  { q: "Which of the following best describes the cabling characteristic in ToR architecture?", opts: ["Long centralized copper cabling","Copper cables remain within the rack","Fiber cables are eliminated","Cabling is only external"], ans: 1 },
+  { q: "Which of the following is a key scalability concern in ToR design?", opts: ["Limited server capacity","Switch port utilization","Reduced east-west traffic","Absence of aggregation layer"], ans: 1 },
+  { q: "Which of the following is a distinguishing feature of End of Row (EoR) compared to ToR?", opts: ["More switches to manage","Racks connected at Layer 2","Centralized switching per row","Higher modularity"], ans: 2 },
+  { q: "Which factor limits the performance of EoR architecture?", opts: ["Short copper cables","High modularity","Long twisted pair copper cabling","Support for east-west traffic"], ans: 2 },
+  { q: "What is the function of a Fabric Extender in data centers?", opts: ["Replaces core switches","Extends Layer 1 connectivity to servers","Eliminates aggregation switches","Provides routing services"], ans: 1 },
+  { q: "Which of the following best describes a limitation of traditional hierarchical data center design?", opts: ["Unlimited scalability","High flexibility","Congestion at higher layers","Low infrastructure cost"], ans: 2 },
+  { q: "Why do large data centers transition to Clos networks?", opts: ["Reduce number of servers","Support any-to-any connectivity efficiently","Eliminate need for routing","Depend on large switches"], ans: 1 },
+  { q: "Which statement best describes traffic flow in large data centers?", opts: ["Mostly client to internet","Random isolated flows","Heavy east-west communication","Minimal internal traffic"], ans: 2 },
+  { q: "Which of the following causes aggregation switches to run out of ports?", opts: ["Decrease in server count","Growth in number of ToR switches","Reduced network traffic","Limited routing capabilities"], ans: 1 },
+  { q: "Which of the following is a key limitation of traditional large switches in data centers?", opts: ["Low power consumption","Difficult to configure and manage","High scalability","Reduced cost"], ans: 1 },
+  { q: "What is the major risk when failures occur in traditional tree-based architectures?", opts: ["Improved performance","Increased redundancy","Network partitioning","Reduced traffic"], ans: 2 },
+  { q: "Which of the following best describes scalability in early data center designs?", opts: ["Highly scalable","Easily expandable","Limited and inefficient","Unlimited capacity"], ans: 2 },
+  { q: "Which of the following best describes the architecture of a Clos network?", opts: ["A single large switch connecting all devices","A hierarchical tree with limited interconnections","A multi-stage network using small interconnected switches","A ring topology with equal links"], ans: 2 },
+  { q: "What is a key advantage of Clos networks in large data centers?", opts: ["Eliminates all network congestion","Provides any-to-any connectivity","Requires fewer switches","Depends on centralized routing"], ans: 1 },
+  { q: "Which of the following is a primary reason for using Clos networks instead of traditional tree architectures?", opts: ["Reduced need for cabling","Improved scalability","Lower latency for external traffic only","Elimination of aggregation switches"], ans: 1 },
+  { q: "Which statement best describes scalability in Clos networks?", opts: ["Limited by core switch capacity","Achieved by adding larger switches","Achieved by adding more small switches","Dependent on router performance"], ans: 2 },
+  { q: "In a Clos network, how is traffic handled between multiple servers?", opts: ["Through a single aggregation point","Using multiple parallel paths","Through centralized routing","Using broadcast communication"], ans: 1 },
+  { q: "Which of the following is a limitation of traditional tree-based data center networks that Clos networks solve?", opts: ["Excessive redundancy","High modularity","Bottlenecks at upper layers","Lack of physical connectivity"], ans: 2 },
+  { q: "Which of the following is NOT a characteristic of Clos networks?", opts: ["Uses multiple stages","Uses small switches","Relies on a single core switch","Supports scalable growth"], ans: 2 },
+  { q: "What happens to network capacity when more racks are added in a traditional architecture (without Clos)?", opts: ["Capacity increases proportionally","Capacity decreases or becomes constrained","Capacity remains unchanged","Congestion is eliminated"], ans: 1 },
+  { q: "Which of the following best differentiates Clos networks from traditional architectures?", opts: ["Use of long copper cables","Centralized switching","Distributed switching fabric","Single-layer topology"], ans: 2 },
+  { q: "Why are Clos networks considered more fault-tolerant?", opts: ["They rely on fewer devices","They eliminate failures","They provide multiple alternative paths","They use only fiber connections"], ans: 2 },
+  { q: "Which of the following best explains why Clos networks reduce congestion?", opts: ["By reducing the number of servers","By limiting communication","By providing multiple paths for traffic","By using larger switches"], ans: 2 },
+  { q: "In a Clos network, failure of a single switch typically results in:", opts: ["Total network failure","Network partitioning","Minimal impact due to alternate paths","Complete loss of connectivity"], ans: 2 },
+];
+
+const fillData = [
+  { q: "The traffic pattern known for breaking tasks into subtasks and collecting results is called ______.", ans: "Scatter-gather traffic pattern" },
+  { q: "The communication between servers within a data center is known as ______ traffic.", ans: "East-west" },
+  { q: "The phenomenon where simultaneous responses overwhelm a switch buffer is called ______.", ans: "TCP incast" },
+  { q: "The device used to connect multiple ToR switches to the core network is called an ______ switch.", ans: "Aggregation" },
+  { q: "______ networks connect any number of inputs to outputs using small switches.", ans: "Clos" },
+  { q: "In End of Row architecture, racks are connected at Layer ______.", ans: "1" },
+  { q: "The communication between machines in a data center is described as ______ traffic.", ans: "East-west" },
+  { q: "The phenomenon where multiple flows arrive at the same time is called ______ flows.", ans: "Concurrent" },
+  { q: "In ______ design, cables are typically kept inside the rack.", ans: "ToR" },
+  { q: "A network structure that suffers from congestion at higher levels is called a ______ architecture.", ans: "Tree" },
+  { q: "The architecture that connects inputs to outputs using multiple small switches is called ______ network.", ans: "Clos" },
+  { q: "Clos networks use multiple ______ switches instead of a few large switches.", ans: "Small" },
+  { q: "The main advantage of Clos networks is their ability to scale by adding more ______.", ans: "Switches" },
+  { q: "A Clos network provides ______ connectivity between inputs and outputs.", ans: "Any-to-any" },
+  { q: "Traditional architectures suffer from ______ at higher layers of the network.", ans: "Bottlenecks" },
+  { q: "Clos networks improve fault tolerance by providing multiple ______ paths.", ans: "Alternate" },
+];
+
+const defsData = [
+  { def: "A facility used to house and manage computing resources critical to organizations.", ans: "Data Center" },
+  { def: "A network design that places switches at the top of each rack to provide connectivity.", ans: "Top of Rack (ToR)" },
+  { def: "A network architecture where switches are placed at the end of a row of racks.", ans: "End of Row (EoR)" },
+  { def: "A network traffic characteristic that refers to simultaneous communication sessions.", ans: "Concurrent Flows" },
+  { def: "A phenomenon in data centers caused by many servers sending data to one node simultaneously.", ans: "TCP Incast" },
+  { def: "A traffic pattern where tasks are distributed and results are later collected.", ans: "Scatter-Gather Traffic Pattern" },
+  { def: "A networking issue caused by multiple servers responding simultaneously to one server.", ans: "TCP Incast" },
+  { def: "A design approach where each rack has its own switch placed at the top.", ans: "Top of Rack (ToR)" },
+  { def: "A network architecture that uses multiple interconnected small switches for scalability.", ans: "Clos Network" },
+  { def: "A network architecture that connects any number of inputs to outputs using multiple stages of small switches.", ans: "Clos Network" },
+  { def: "A key design benefit of Clos networks that allows expansion without major redesign.", ans: "Scalability" },
+  { def: "A limitation in traditional data center networks where higher-level switches become congested.", ans: "Bottleneck" },
+  { def: "A feature of Clos networks that allows traffic to reroute in case of failure.", ans: "Multiple Paths" },
+];
+
+const essayData = [
+  {
+    q: "What is the traffic pattern commonly observed in data center applications such as web search?",
+    body: `<p><span class="highlight">Scatter-Gather Traffic Pattern</span></p>
+    <p style="margin-top:8px">In applications like web search, a query is <strong>scattered</strong> (broken into subtasks) and sent to multiple servers simultaneously. Each server processes its portion and returns a partial result. These results are then <strong>gathered</strong> (collected and aggregated) by the originating node to form the final response.</p>
+    <p style="margin-top:8px">This pattern causes many servers to respond simultaneously to a single node, which can lead to <span class="highlight">TCP incast</span> and switch buffer overflow.</p>`
+  },
+  {
+    q: "State three characteristics of flows in data center traffic.",
+    body: `<ul>
+      <li><span class="highlight">Concurrent Flows</span> — Many flows occur simultaneously across the network.</li>
+      <li><span class="highlight">Flows Arrival Rate</span> — Flows arrive unpredictably, creating bursty patterns.</li>
+      <li><span class="highlight">Flows Size</span> — Flow sizes vary widely, from small control messages to large data transfers.</li>
+    </ul>`
+  },
+  {
+    q: "What are the implications for networking in cloud data centers?",
+    body: `<ul>
+      <li>Data center <strong>internal traffic is very large</strong> — machine-to-machine communication dominates.</li>
+      <li><strong>Tight deadlines</strong> for network I/O — applications require fast, low-latency transfers.</li>
+      <li><strong>Congestion and TCP incast</strong> — simultaneous responses overwhelm switch buffers.</li>
+      <li><strong>Need for isolation</strong> across different applications sharing the infrastructure.</li>
+      <li><strong>Centralized control</strong> at the flow level may be extremely difficult due to scale and dynamism.</li>
+    </ul>`
+  },
+  {
+    q: "Draw and state advantages and disadvantages between ToR and EoR.",
+    body: `<table class="compare-table">
+      <tr><th>Design</th><th>Description</th><th>Advantages</th><th>Disadvantages</th></tr>
+      <tr>
+        <td><strong>EoR</strong><br><small style="color:#6b7280">End of Row</small></td>
+        <td>All wiring runs from each server to the end of the row (last rack / aggregation switch).</td>
+        <td class="pro">• Fewer switches to manage<br>• Supports mix of 10G and high-density 1G environments</td>
+        <td class="con">• High density of physical connections in EoR rack<br>• More physical wiring components (patch panels, cable trays)</td>
+      </tr>
+      <tr>
+        <td><strong>ToR</strong><br><small style="color:#6b7280">Top of Rack</small></td>
+        <td>All servers in a rack aggregate into a switch located at the top of the individual server rack/cabinet.</td>
+        <td class="pro">• Greatly reduced wiring — saves data center build cost<br>• Easier troubleshooting<br>• Easy to migrate racks from 1G to 10G</td>
+        <td class="con">• More switches to manage<br>• Not enough density for high-density 1G environments</td>
+      </tr>
+    </table>`
+  },
+  {
+    q: "What are the advantages of a Fabric Extender?",
+    body: `<ul>
+      <li>Fewer switches to manage overall.</li>
+      <li>Fewer ports required in the aggregation area <span class="highlight">(EoR benefit)</span>.</li>
+      <li>Fewer STP instances to manage <span class="highlight">(EoR benefit)</span>.</li>
+      <li>Unique control plane per hundreds of ports; lower skill set required for replacement <span class="highlight">(EoR)</span>.</li>
+      <li>Copper stays "In Rack" — no large copper cabling infrastructure required <span class="highlight">(ToR benefit)</span>.</li>
+      <li>Lower cabling costs <span class="highlight">(ToR benefit)</span>.</li>
+      <li>Cleaner cable management <span class="highlight">(ToR benefit)</span>.</li>
+      <li>Modular and flexible "per rack" architecture.</li>
+    </ul>`
+  },
+  {
+    q: "How to connect different racks of servers through a network?",
+    body: `<p><span class="highlight">Clos Networks</span></p>
+    <ul style="margin-top:8px">
+      <li>Connects <strong>any number of inputs to any number of outputs</strong>.</li>
+      <li>Consists of <strong>small-size switches</strong> in multiple stages.</li>
+      <li>Provides <strong>any-to-any connectivity</strong> efficiently.</li>
+      <li>Scales by <strong>adding more switches</strong> without replacing existing infrastructure.</li>
+      <li>Provides multiple paths, improving <strong>fault tolerance</strong> — a single switch failure has minimal impact.</li>
+    </ul>`
+  },
+];
+
+let answered = new Set();
+const totalMCQ = mcqData.length;
+
+function renderMCQ() {
+  const container = document.getElementById('mcq-container');
+  const letters = ['A','B','C','D'];
+  mcqData.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `mcq-${i}`;
+    const optsHTML = item.opts.map((o, oi) =>
+      `<div class="option" data-qi="${i}" data-oi="${oi}" onclick="selectOption(${i},${oi})">
+        <span class="opt-letter">${letters[oi]}</span>${o}
+      </div>`
+    ).join('');
+    card.innerHTML = `
+      <div class="q-header" onclick="toggleCard('mcq-${i}')">
+        <div class="q-num">${i+1}</div>
+        <div class="q-text">${item.q}</div>
+        <div class="q-toggle">+</div>
+      </div>
+      <div class="q-body">
+        <div class="options">${optsHTML}</div>
+        <button class="show-btn" onclick="revealMCQ(${i})">Show Answer</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function selectOption(qi, oi) {
+  if (answered.has(qi)) return;
+  answered.add(qi);
+  const correct = mcqData[qi].ans;
+  document.querySelectorAll(`[data-qi="${qi}"]`).forEach((el, idx) => {
+    if (idx === correct) el.classList.add('correct');
+    else if (idx === oi && oi !== correct) el.classList.add('wrong');
+  });
+  updateScore();
+}
+
+function revealMCQ(qi) {
+  if (answered.has(qi)) return;
+  answered.add(qi);
+  document.querySelectorAll(`[data-qi="${qi}"]`)[mcqData[qi].ans].classList.add('revealed-correct');
+  updateScore();
+}
+
+function updateScore() {
+  const count = answered.size;
+  document.getElementById('score-display').textContent = `${count} / ${totalMCQ}`;
+  document.getElementById('score-bar-fill').style.width = `${(count/totalMCQ)*100}%`;
+}
+
+function renderFill() {
+  const container = document.getElementById('fill-container');
+  fillData.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `fill-${i}`;
+    card.innerHTML = `
+      <div class="q-header" onclick="toggleCard('fill-${i}')">
+        <div class="q-num">${i+1}</div>
+        <div class="q-text">${item.q}</div>
+        <div class="q-toggle">+</div>
+      </div>
+      <div class="q-body">
+        <button class="show-btn" onclick="showFill(${i})">Show Answer</button>
+        <div id="fill-ans-${i}" style="display:none; margin-top:10px">
+          <div class="answer-box">
+            <div class="answer-label">Answer</div>
+            <div class="answer-text">${item.ans}</div>
+          </div>
+        </div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function showFill(i) {
+  document.getElementById(`fill-ans-${i}`).style.display = 'block';
+  const card = document.getElementById(`fill-${i}`);
+  if (!card.classList.contains('open')) card.classList.add('open');
+}
+
+function renderDefs() {
+  const container = document.getElementById('defs-container');
+  defsData.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'def-item';
+    el.id = `def-${i}`;
+    el.innerHTML = `
+      <div class="def-num">${String(i+1).padStart(2,'0')}.</div>
+      <div style="flex:1">
+        <div class="def-q">${item.def}</div>
+        <button class="show-btn" onclick="revealDef(${i})">Show Answer</button>
+        <div class="def-a" id="def-a-${i}">${item.ans}</div>
+      </div>`;
+    container.appendChild(el);
+  });
+}
+
+function revealDef(i) {
+  document.getElementById(`def-a-${i}`).style.display = 'block';
+}
+
+function renderEssay() {
+  const container = document.getElementById('essay-container');
+  essayData.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'essay-card';
+    card.id = `essay-${i}`;
+    card.innerHTML = `
+      <div class="essay-q" onclick="toggleEssay(${i})">
+        <span style="flex:1">${item.q}</span>
+        <span class="essay-toggle">+</span>
+      </div>
+      <div class="essay-body">${item.body}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function toggleEssay(i) {
+  document.getElementById(`essay-${i}`).classList.toggle('open');
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+renderMCQ();
+renderFill();
+renderDefs();
+renderEssay();
+</script>
+</body>
+</html>
